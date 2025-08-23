@@ -10,17 +10,28 @@ oscillator.connect(gainNode);
 gainNode.connect(audioCtx.destination);
 oscillator.type = "sine";
 
-
-function frequency(pitch) {
-    oscillator.start();
+// Start the oscillator and mute it
+oscillator.start();
 gainNode.gain.value = 0;
 
-gainNode.gain.setValueAtTime(100, audioCtx.currentTime);
-oscillator.frequency.setValueAtTime(pitch.audioCtx, currentTime);
-gainNode.gain.setTargetAtTime(0,audioCtx+1);
 
+function frequency(pitch) {
+    const now = audioCtx.currentTime;
+    const freq = Number(pitch);
+
+    if (isNaN(freq)){
+        console.log("Please enter a number for the frequency");
+        return;
+    }
+    //start volume rigth away
+gainNode.gain.setValueAtTime(1, audioCtx.now);
+//set oscillator frequency
+oscillator.frequency.setValueAtTime(freq, now);
+//stop volume after 1 second
+gainNode.gain.setTargetAtTime(0, now + 0.5, 0.1);
 }
 
 function handle() {
+    audioCtx.resume();
     frequency(input.value);
 }
