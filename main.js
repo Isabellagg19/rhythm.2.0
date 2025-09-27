@@ -1,25 +1,30 @@
 const input = document.getElementById('input');
-
-oscillator.start();
-gainNode.gain.value = 0;
-
-//create web audio api elements
 const audioCtx = new AudioContext();
-const gainNode = audioCtx.createGain();
 
-//create Oscillator node
-const oscillator = audioCtx.createOscillator();
-oscillator.connect(gainNode);
-gainNode.connect(audioCtx.destination);
-oscillator.type = "sine";
+function frequency(pitch) {
+  const freq = parseFloat(pitch); 
+  if (isNaN(freq)) {
+    console.log("Not a valid frequency");
+    return;
+  }
 
-function frequency (pitch){
+  const gainNode = audioCtx.createGain();
+  const oscillator = audioCtx.createOscillator();
 
+  oscillator.type = "sine";
+  oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
 
+  oscillator.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+
+  gainNode.gain.setValueAtTime(1, audioCtx.currentTime);
+  gainNode.gain.setValueAtTime(0, audioCtx.currentTime + 1);
+
+  oscillator.start();
+  oscillator.stop(audioCtx.currentTime + 1);
 }
 
-function handle(){
-    audioCtx.resume();
-    gainNode.gain.value = 0;
-    frequency(input.value);
+function handle() {
+  audioCtx.resume();
+  frequency(input.value);
 }
