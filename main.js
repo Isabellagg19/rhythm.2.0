@@ -1,38 +1,63 @@
 const input = document.getElementById('input');
+var amplitude = 40;
 
-const audioCtx = new AudioContext();
-const gainNode = audioCtx.createGain();
+//define canvas variables
+var canvas = document.getElementById("canvas");
+var ctx = canvas.getContext("2d"); 
+var width = ctx.canvas.width;
+var height = ctx.canvas.height;
 
-const oscillator = audioCtx.createOscillator();
-oscillator.connect(gainNode);
-gainNode.connect(audioCtx.destination);
-oscillator.type = 'sine';
+var counter =0;
+function drawWave() {
+       counter = 0;
+}
+function line() {
+  freq = pitch / 10000;
+  y= height/2 + (amplitude * Math.sin(x * 2 * Math.PI * freq));
+   ctx.lineTo(x, y);
+   ctx.stroke();
+   x = x + 1;
+   //increase counter by 1 to show how long interval has been run
+   counter++;
+}
 
-oscillator.start();
-gainNode.gain.value = 0;
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-const notenames = new Map();
-notenames.set('A', 261.63);
-notenames.set('B',293.66);
-notenames.set('C', 329.63);
-notenames.set('D', 349.23);
-notenames.set('E', 392.00);
-notenames.set('F', 440.00);
-notenames.set('G', 493.88);
+const notenames = new Map
+notenames.set("A", 261.63);
+notenames.set("B", 293.66);
+notenames.set("C", 329.63);
+notenames.set("D", 349.23);
+notenames.set("E", 392.00);
+notenames.set("F", 440.00);
+notenames.set("G", 493.88);
 
 function frequency(pitch) {
   if (!pitch) return;
-    const freq = Number(pitch);
-  if (isNaN(freq)) return;
-  
-  gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+
+  const oscillator = audioCtx.createOscillator();
+  const gainNode = audioCtx.createGain();
+
+  oscillator.type = 'sine';
   oscillator.frequency.setValueAtTime(pitch, audioCtx.currentTime);
-  gainNode.gain.setValueAtTime(0, audioCtx.currentTime + 1);
+
+  oscillator.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+
+  gainNode.gain.setValueAtTime(1, audioCtx.currentTime);
+  gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1);
+
+  oscillator.start();
+  oscillator.stop(audioCtx.currentTime + 1);
 }
 
 function handle() {
   audioCtx.resume();
-  var usernotes = String(input.value.toUpperCase());
-  const pitch = notenames.get(usernotes);
+  const usernote = input.value.trim().toUpperCase();
+  const pitch = notenames.get(usernote);
+  if (!pitch) {
+    alert('Please enter a note between A and G');
+    return;
+  }
   frequency(pitch);
 }
