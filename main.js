@@ -1,5 +1,6 @@
 const input = document.getElementById('input');
 var amplitude = 40;
+var interval = null;
 
 //define canvas variables
 var canvas = document.getElementById("canvas");
@@ -9,7 +10,13 @@ var height = ctx.canvas.height;
 
 var counter =0;
 function drawWave() {
+  ctx.clearRect(0, 0, width, height);
+  x = 0
+  y = height/2;
+  ctx.moveTo(x, y);
+  ctx.beginPath()
        counter = 0;
+       interval = setInterval(line, 20);
 }
 function line() {
   freq = pitch / 10000;
@@ -19,6 +26,9 @@ function line() {
    x = x + 1;
    //increase counter by 1 to show how long interval has been run
    counter++;
+   if (counter > 50) {
+           clearInterval(interval);
+   }
 }
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -60,4 +70,5 @@ function handle() {
     return;
   }
   frequency(pitch);
+  drawWave(pitch); 
 }
