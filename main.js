@@ -1,34 +1,40 @@
 const input = document.getElementById('input');
-var amplitude = 40;
-var interval = null;
-
 //define canvas variables
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d"); 
 var width = ctx.canvas.width;
 var height = ctx.canvas.height;
 
-var counter =0;
+var amplitude = 40; //how tall is the wave
+var freq; //the frequency value of each note
+var x = 0; //x position (it starts in 0)
+var y = height / 2; //The middle of the canvas
+var counter = 0; //for how long it is draw
+var interval = null; //handler
+
 function drawWave() {
+  counter = 0;
   ctx.clearRect(0, 0, width, height);
   x = 0
   y = height/2;
+  ctx.beginPath();
   ctx.moveTo(x, y);
-  ctx.beginPath()
-       counter = 0;
-       interval = setInterval(line, 20);
+  // Run line() every 20s
+  interval = setInterval(line, 20);
+
 }
+
 function line() {
-  freq = pitch / 10000;
-  y= height/2 + (amplitude * Math.sin(x * 2 * Math.PI * freq));
+   y = height / 2 + (amplitude * Math.sin(x * 2 * Math.PI * freq));
    ctx.lineTo(x, y);
    ctx.stroke();
+
    x = x + 1;
-   //increase counter by 1 to show how long interval has been run
-   counter++;
-   if (counter > 50) {
-           clearInterval(interval);
-   }
+    counter++;
+
+     if (counter > 50) {
+      clearInterval(interval);
+     }
 }
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -59,16 +65,15 @@ function frequency(pitch) {
 
   oscillator.start();
   oscillator.stop(audioCtx.currentTime + 1);
+   freq = pitch / 10000;
 }
 
 function handle() {
   audioCtx.resume();
-  const usernote = input.value.trim().toUpperCase();
-  const pitch = notenames.get(usernote);
-  if (!pitch) {
-    alert('Please enter a note between A and G');
-    return;
-  }
+  var usernotes = String(input.value.toUpperCase());
+for (i = 0; i < usernotes.length; i++){
+  
+}
   frequency(pitch);
-  drawWave(pitch); 
+  drawWave(); 
 }
