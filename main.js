@@ -1,4 +1,5 @@
 const input = document.getElementById('input');
+let reset = false;
 //define canvas variables
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d"); 
@@ -13,6 +14,8 @@ var counter = 0; //for how long it is draw
 var interval = null; //handler
 
 function drawWave() {
+  //Starting a new interval
+  clearInterval(interval);
   counter = 0;
   if (reset) {
   ctx.clearRect(0, 0, width, height);
@@ -23,6 +26,7 @@ function drawWave() {
   }
   // Run line() every 20s
   interval = setInterval(line, 20);
+  reset = false;
 
 }
 
@@ -63,7 +67,7 @@ function frequency(pitch) {
   gainNode.connect(audioCtx.destination);
 
   gainNode.gain.setValueAtTime(1, audioCtx.currentTime);
-  gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1);
+  gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.9);
 
   oscillator.start();
   oscillator.stop(audioCtx.currentTime + 1);
@@ -71,6 +75,7 @@ function frequency(pitch) {
 }
 
 function handle() {
+    reset = true;
   audioCtx.resume();
   var usernotes = String(input.value);
   var noteslist = []; 
