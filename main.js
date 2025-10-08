@@ -14,11 +14,13 @@ var interval = null; //handler
 
 function drawWave() {
   counter = 0;
+  if (reset) {
   ctx.clearRect(0, 0, width, height);
   x = 0
   y = height/2;
   ctx.beginPath();
   ctx.moveTo(x, y);
+  }
   // Run line() every 20s
   interval = setInterval(line, 20);
 
@@ -70,10 +72,22 @@ function frequency(pitch) {
 
 function handle() {
   audioCtx.resume();
-  var usernotes = String(input.value.toUpperCase());
-for (i = 0; i < usernotes.length; i++){
-  
+  var usernotes = String(input.value);
+  var noteslist = []; 
+
+for (i = 0; i < usernotes.length; i++) {
+  noteslist.push(notenames.get(usernotes.charAt(i)));
 }
-  frequency(pitch);
-  drawWave(); 
+let j = 0;
+   repeat = setInterval(() => {
+       if (j < noteslist.length) {
+           frequency(parseInt(noteslist[j]));
+           drawWave();
+       j++
+       } else {
+           clearInterval(repeat)
+       }
+
+
+   }, 1000)
 }
