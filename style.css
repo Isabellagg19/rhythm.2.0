@@ -1,6 +1,13 @@
+body {
+    text-align: center;
+    background-color: beige;
+    color: aliceblue;
+    font-family: sans-serif;
+}
 #canvas {
     border: 5px solid rgb(207, 58, 58);
     height: 500px;
     width: 900px;
     margin-bottom: 2em;
+    background-color: beige;
 }
