@@ -1,5 +1,6 @@
 const input = document.getElementById('input');
 const color_picker = document.getElementById('color');
+const vol_slider = document.getElementById('vol-slider');
 var timepernote = 0;
 var length = 0;
 //define canvas variables
@@ -8,7 +9,6 @@ var ctx = canvas.getContext("2d");
 var width = ctx.canvas.width;
 var height = ctx.canvas.height;
 
-var amplitude = 40; //how tall is the wave
 var freq; //the frequency value of each note
 var x = 0; //x position (it starts in 0)
 var y = height / 2; //The middle of the canvas
@@ -45,17 +45,15 @@ function drawWave() {
 }
 
 function line() {
-   y = height / 2 + amplitude * Math.sin(x * 2 * Math.PI * freq * (0.5 * length));
+   y = height / 2 + ((vol_slider.value/100) * 40) * Math.sin(x * 2 * Math.PI * freq * (0.5 * length));
    ctx.lineTo(x, y);
    ctx.stroke();
-   ctx.strokeStyle = color_picker.value;
    x = x + 1;
     counter++;
 
      if (counter > timepernote / 20) {
       clearInterval(interval);
      }
-     ctx.stroke();
 }
 
 
@@ -71,8 +69,22 @@ function frequency(pitch) {
   oscillator.connect(gainNode);
   gainNode.connect(audioCtx.destination);
 
-  gainNode.gain.setValueAtTime(1, audioCtx.currentTime);
-  gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + (timepernote/1000) - 0.1);
+  gainNode.gain.setValueAtTime(vol_slider.value, audioCtx.currentTime);
+  setting = setInterval(() => {gainNode.gain.value = vol_slider.value}, 1);
+  oscillator.frequency.setValueAtTime(pitch, audioCtx.currentTime);
+  setTimeout(() => { clearInterval(setting);
+    gainNode.gain.value = 0}, ((timepernote)-10));
+
+let hue = Math.floor((pitch - 200) / 2); // map pitch range to color hue
+let color1 = `hsl(${hue}, 100%, 60%)`;
+let color2 = `hsl(${(hue + 60) % 360}, 100%, 60%)`;
+
+// create gradient and assign it to strokeStyle
+let gradient = ctx.createLinearGradient(0, 0, width, 0);
+gradient.addColorStop(0, color1);
+gradient.addColorStop(1, color2);
+
+ctx.strokeStyle = gradient;
 
   oscillator.start();
   oscillator.stop(audioCtx.currentTime + 1);
