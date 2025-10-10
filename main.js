@@ -52,6 +52,7 @@ function drawWave() {
 function line() {
    y = height / 2 + ((vol_slider.value/100) * 40) * Math.sin(x * 2 * Math.PI * freq * (0.5 * length));
    ctx.lineTo(x, y);
+   ctx.strokeStyle = color_picker.value;
    ctx.stroke();
    x = x + 1;
     counter++;
@@ -79,17 +80,6 @@ function frequency(pitch) {
   oscillator.frequency.setValueAtTime(pitch, audioCtx.currentTime);
   setTimeout(() => { clearInterval(setting);
     gainNode.gain.value = 0}, ((timepernote)-10));
-
-let hue = Math.floor((pitch - 200) / 2); // map pitch range to color hue
-let color1 = `hsl(${hue}, 100%, 60%)`;
-let color2 = `hsl(${(hue + 60) % 360}, 100%, 60%)`;
-
-// create gradient and assign it to strokeStyle
-let gradient = ctx.createLinearGradient(0, 0, width, 0);
-gradient.addColorStop(0, color1);
-gradient.addColorStop(1, color2);
-
-ctx.strokeStyle = gradient;
 
   oscillator.start();
   oscillator.stop(audioCtx.currentTime + 1);
