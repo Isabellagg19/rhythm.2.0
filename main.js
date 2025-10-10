@@ -113,7 +113,6 @@ let j = 0;
 }
 
 function startRecording(){
-  chunks = [];
   const canvasStream = canvas.captureStream(20);
   const audioDestination = audioCtx.createMediaStreamDestination(); 
    gainNode.connect(audioDestination);
@@ -127,7 +126,8 @@ function startRecording(){
       chunks.push(e.data);
     }
   };
-    recorder.onstop = () => {
+  
+  recorder.onstop = () => {
     blob = new Blob(chunks, { type: "video/webm" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -141,8 +141,9 @@ function startRecording(){
   console.log("Recording started...");
 }
 
+
 function toggle(){
-  is_recording = !is_recording;
+is_recording = !is_recording;
   if (is_recording) {
     recording_toggle.innerHTML = "Stop Recording";
     startRecording();
