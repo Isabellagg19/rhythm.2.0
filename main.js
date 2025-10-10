@@ -4,14 +4,15 @@ const vol_slider = document.getElementById('vol-slider');
 const recording_toggle = document.getElementById('record');
 var timepernote = 0;
 var length = 0;
-var is_recording = false;
 //define canvas variables
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d"); 
 var width = ctx.canvas.width;
 var height = ctx.canvas.height;
-var blob, recorder = null;
+var blob = null;
+var recorder = null;
 var chunks = [];
+var is_recording = false;
 
 var freq; //the frequency value of each note
 var x = 0; //x position (it starts in 0)
@@ -122,31 +123,35 @@ let j = 0;
 }
 
 function startRecording(){
+  chunks = [];
   const canvasStream = canvas.captureStream(20);
-  const audioDestination = audioCtx.createMediaStreamDestination();
-
+   const audioDestination = audioCtx.createMediaStreamDestination();
   const combinedStream = new MediaStream();
 
   canvasStream.getVideoTracks().forEach(track => combinedStream.addTrack(track));
 
 gainNode?.connect(audioDestination);
 audioDestination.stream.getAudioTracks().forEach(track => combinedStream.addTrack(track));
- recorder = new MediaRecorder(combinedStream);
-  recorder.ondataavailable = e => chunks.push(e.data);
-  recorder.onstop = saveRecording;
+ recorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm'});
+recorder.ondataavailable = e => {
+ if (e.data.size > 0) {
+   chunks.push(e.data);
+ }
+};
 
+
+recorder.onstop = () => {
+   const blob = new Blob(chunks, { type: 'video/webm' });
+   const url = URL.createObjectURL(blob);
+   const a = document.createElement('a');
+   a.href = url;
+   a.download = 'recording.webm';
+   a.click();
+   URL.revokeObjectURL(url);
+};
 recorder.start();
 }
 
-function saveRecording() {
-  blob = new Blob(chunks, { type: "video/webm" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "oscillart_recording.webm";
-  a.click();
-  URL.revokeObjectURL(url);
-}
 
 function toggle(){
 is_recording = !is_recording;
