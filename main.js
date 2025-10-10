@@ -115,41 +115,40 @@ let j = 0;
 function startRecording(){
   chunks = [];
   const canvasStream = canvas.captureStream(20);
-   const audioDestination = audioCtx.createMediaStreamDestination();
-  const combinedStream = new MediaStream();
+  const audioDestination = audioCtx.createMediaStreamDestination(); 
+   gainNode.connect(audioDestination);
+    const combinedStream = new MediaStream();
+     canvasStream.getVideoTracks().forEach(track => combinedStream.addTrack(track));
+      audioDestination.stream.getAudioTracks().forEach(track => combinedStream.addTrack(track));
 
-  canvasStream.getVideoTracks().forEach(track => combinedStream.addTrack(track));
+        recorder = new MediaRecorder(combinedStream, { mimeType: "video/webm" });
+ recorder.ondataavailable = e => {
+    if (e.data.size > 0) {
+      chunks.push(e.data);
+    }
+  };
+    recorder.onstop = () => {
+    blob = new Blob(chunks, { type: "video/webm" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "oscillart_recording.webm";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
-gainNode?.connect(audioDestination);
-audioDestination.stream.getAudioTracks().forEach(track => combinedStream.addTrack(track));
- recorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm'});
-recorder.ondataavailable = e => {
- if (e.data.size > 0) {
-   chunks.push(e.data);
- }
-};
-
-
-recorder.onstop = () => {
-   const blob = new Blob(chunks, { type: 'video/webm' });
-   const url = URL.createObjectURL(blob);
-   const a = document.createElement('a');
-   a.href = url;
-   a.download = 'recording.webm';
-   a.click();
-   URL.revokeObjectURL(url);
-};
-recorder.start();
+  recorder.start();
+  console.log("Recording started...");
 }
-
 
 function toggle(){
-is_recording = !is_recording;
-if(is_recording) {
-  recording_toggle.innerHTML = "stop Recording";
-  startRecording();
-} else {
-  recording_toggle.innerHTML = "Start recording";
-  recorder.stop();
+  is_recording = !is_recording;
+  if (is_recording) {
+    recording_toggle.innerHTML = "Stop Recording";
+    startRecording();
+  } else {
+    recording_toggle.innerHTML = "Start Recording";
+    recorder.stop();
+  }
 }
-}
+recording_toggle.addEventListener("click", toggle);
