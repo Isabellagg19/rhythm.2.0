@@ -1,4 +1,4 @@
-const input = document.getElementById('input');
+const input = document.getElementById('input'); 
 const color_picker = document.getElementById('color');
 const vol_slider = document.getElementById('vol-slider');
 const recording_toggle = document.getElementById('record');
