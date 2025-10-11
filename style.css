@@ -1,13 +1,30 @@
-body {
-    text-align: center;
-    background-color: beige;
-    color: aliceblue;
-    font-family: sans-serif;
+
+#container {
+  display: flex;
+  background-color: beige;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: sans-serif;
+  gap: 10px;
 }
+
+#title{
+background: linear-gradient(90deg, #f1893e, #da217a);
+  background-clip: text; /* versión estándar */
+  -webkit-background-clip: text; /* versión para Chrome, Safari */
+  -webkit-text-fill-color: transparent; /* hace que el gradiente sea visible */
+  font-family: 'Marcellus', serif;
+  font-size: 55px;
+  text-align: center;
+}
+
 #canvas {
+    display: block;
+    border-radius: 12px;
     border: 5px solid rgb(207, 58, 58);
     height: 500px;
     width: 900px;
-    margin-bottom: 2em;
     background-color: beige;
 }
